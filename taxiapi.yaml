@@ -1,0 +1,163 @@
+openapi: 3.1.0
+info:
+  title: Taxi Mobile Application API
+  description: API for clients and drivers
+  version: 1.0.0
+servers:
+  - url: https://taxi.example.com/api
+    description: API server
+
+paths:
+/clientSms:
+    post:
+      summary: Verify client mobile number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                moobile:
+                  type: string
+              required:
+                - mobile
+      responses:
+        "200":
+          description: Successful verification
+        "401":
+          description: Invalid credentials
+/clientLogin:
+  post:
+    summary: Send verification code via SMS
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              smsCode:
+                type: string
+            required:
+              - smsCode
+    responses:
+      "200":
+        description: Successful verification
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                authToken: string
+                userType: string
+                moderated: integer
+                newAccount: integer
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                mobile:
+                  type: string
+                image:
+                  type: string
+                email:
+                  type: string
+                birth:
+                  type: string
+      "400":
+        description: Invalid credentials
+/clientProfile:
+        summary: Get client detail 
+        parameters:
+       - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+          responses:
+        "200":
+          description: Bill rendered successfully
+          content:
+            application/json:
+              schema:
+                type: oblect
+                properties:
+                id:
+                  type: integer
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                mobile:
+                  type: string
+                image:
+                  type: string
+                email:
+                  type: string
+                birth:
+                  type: string
+        "401":
+          description: Unauthorized
+/clientRrofileEdit:
+  post:
+    summary: Edition or add new profile data
+    parameters:
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              id:
+              type: integer
+            firstName:
+              type: string
+            lastName:
+              type: string
+            mobile:
+              type: string
+            image:
+              type: string
+            email:
+              type: string
+            birth:
+                type: string
+            required:
+              - id
+              - mobile
+              - firstName
+              - lastName
+    responses:
+      "200":
+        description: Successful profilr edition
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                moderated: integer
+                newAccount: integer
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                mobile:
+                  type: string
+                image:
+                  type: string
+                email:
+                  type: string
+                birth:
+                  type: string
+      "400":
+        description: Invalid credentials
+      "401":
+          description: Unauthorized
