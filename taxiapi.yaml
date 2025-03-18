@@ -10,7 +10,7 @@ servers:
 paths:
 /clientSms:
     post:
-      summary: Verify client mobile number
+      summary: Verify client mobile number  
       requestBody:
         required: true
         content:
@@ -26,6 +26,28 @@ paths:
         "200":
           description: Successful verification
         "401":
+          description: Invalid credentials
+/clientRegister:
+    post:
+      summary: Request for client registration  
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userType:
+                  type: string
+                moobile:
+                  type: string
+              required:
+                - mobile
+                - userType
+      responses:
+        "200":
+          description: Successful create lite account and send verify code in sms
+        "400":
           description: Invalid credentials
 /clientLogin:
   post:
@@ -49,10 +71,17 @@ paths:
             schema:
               type: object
               properties:
-                authToken: string
-                userType: string
-                moderated: integer
-                newAccount: integer
+                authToken:
+                  type: string
+                userType: 
+                  type: string
+                  enum: ['client', 'driver']
+                moderated:
+                  type: integer
+                  enum: [0, 1]
+                newAccount:
+                  type: integer
+                  enum: [0, 1]
                 firstName:
                   type: string
                 lastName:
@@ -63,6 +92,7 @@ paths:
                   type: string
                 email:
                   type: string
+                  format: email
                 birth:
                   type: string
       "400":
@@ -78,11 +108,11 @@ paths:
       responses:
           responses:
         "200":
-          description: Bill rendered successfully
+          description: Get client profile info
           content:
             application/json:
               schema:
-                type: oblect
+                type: object
                 properties:
                 id:
                   type: integer
@@ -96,6 +126,7 @@ paths:
                   type: string
                 email:
                   type: string
+                  format: email
                 birth:
                   type: string
         "401":
@@ -109,6 +140,11 @@ paths:
           required: true
           schema:
             type: string
+        - name: id
+          in: query  
+          required: true
+          schema:
+            type: integer
     requestBody:
       required: true
       content:
@@ -116,8 +152,6 @@ paths:
           schema:
             type: object
             properties:
-              id:
-              type: integer
             firstName:
               type: string
             lastName:
@@ -128,23 +162,29 @@ paths:
               type: string
             email:
               type: string
+              format: email
             birth:
                 type: string
             required:
-              - id
               - mobile
               - firstName
               - lastName
     responses:
       "200":
-        description: Successful profilr edition
+        description: Successful profile edition
         content:
           application/json:
             schema:
               type: object
               properties:
-                moderated: integer
-                newAccount: integer
+                moderated:
+                  type: integer
+                  enum: [0, 1]
+                newAccount:
+                  type: integer
+                  enum: [0, 1]
+                id:
+                 type: integer 
                 firstName:
                   type: string
                 lastName:
@@ -155,9 +195,130 @@ paths:
                   type: string
                 email:
                   type: string
+                  format: email
                 birth:
                   type: string
       "400":
         description: Invalid credentials
       "401":
           description: Unauthorized
+/driverProfile:
+        summary: Get driver detail 
+        parameters:
+       - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+          responses:
+        "200":
+          description: Get driver profile info
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                id:
+                  type: integer
+                number:
+                  type: string  
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                mobile:
+                  type: string
+                image:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                birth:
+                  type: string
+                company:
+                  type: string
+        "401":
+          description: Unauthorized
+/driverRrofileEdit:
+  post:
+    summary: Edition or add new driver profile data
+    parameters:
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: query  
+          required: true
+          schema:
+            type: integer    
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              number:
+                  type: string  
+              firstName:
+                  type: string
+              lastName:
+                  type: string
+              mobile:
+                  type: string
+              image:
+                  type: string
+              email:
+                  type: string
+                  format: email
+              birth:
+                  type: string
+              company:
+                  type: string
+              required:    
+              - number    
+              - mobile
+              - firstName
+              - lastName
+              - company
+    responses:
+      "200":
+        description: Successful driver profile edition
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                moderated:
+                  type: integer
+                  enum: [0, 1]
+                newAccount: 
+                  type: integer
+                  enum: [0, 1]
+                id:
+                  type: integer
+              number:
+                  type: string  
+              firstName:
+                  type: string
+              lastName:
+                  type: string
+              mobile:
+                  type: string
+              image:
+                  type: string
+              email:
+                  type: string
+                  format: email
+              birth:
+                  type: string
+              company:
+                  type: string
+      "400":
+        description: Invalid credentials
+      "401":
+          description: Unauthorized
+
